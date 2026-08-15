@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette */
+  --color-paper: #f6f7fb;
+  --color-ink: #12172b;
+  --color-ink-soft: #4b5268;
+  --color-ink-faint: #8890a6;
+  --color-line: #e3e6f0;
+
+  --color-brand-50: #eef0ff;
+  --color-brand-100: #e0e3ff;
+  --color-brand-300: #a6acf5;
+  --color-brand-500: #4b46e0;
+  --color-brand-600: #3c37c9;
+  --color-brand-700: #2f2ba3;
+  --color-brand-900: #1c1a63;
+
+  --color-clip-teal: #0f8b8d;
+  --color-clip-teal-100: #e2f5f4;
+  --color-stamp-amber: #b6762a;
+  --color-stamp-amber-100: #fbf0e0;
+  --color-flag-rose: #c23a5a;
+  --color-flag-rose-100: #fceef1;
+
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "URW Palladio L", serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --shadow-card: 0 1px 2px rgba(18, 23, 43, 0.04), 0 8px 24px -12px rgba(18, 23, 43, 0.12);
+  --shadow-card-hover: 0 4px 10px rgba(18, 23, 43, 0.06), 0 16px 32px -12px rgba(18, 23, 43, 0.18);
+
+  --animate-tick: tick 0.4s ease forwards;
+  --animate-rise: rise 0.5s ease forwards;
+
+  @keyframes tick {
+    0% { stroke-dashoffset: 24; opacity: 0; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes rise {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background-color: var(--color-brand-100);
+    color: var(--color-brand-900);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Perforated "tear" edge used as the signature motif — echoes a form's
+     detachable acknowledgement slip. */
+  .perf-edge {
+    background-image: radial-gradient(circle, var(--color-paper) 2.5px, transparent 2.6px);
+    background-size: 14px 14px;
+    background-position: -3px center;
+    height: 10px;
+  }
+
+  .field-dashed {
+    border: 1.5px dashed var(--color-line);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
