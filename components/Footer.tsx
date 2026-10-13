@@ -28,6 +28,9 @@ export default function Footer() {
             <ul className="mt-3 space-y-2 text-[14px] text-ink-soft">
               <li><Link href="/" className="hover:text-brand-700">Home</Link></li>
               <li><Link href="/forms" className="hover:text-brand-700">Explore Forms</Link></li>
+              <li><Link href="/ready" className="hover:text-brand-700">Am I Ready?</Link></li>
+              <li><Link href="/tools" className="hover:text-brand-700">Document Tools</Link></li>
+              <li><Link href="/find" className="hover:text-brand-700">Find My Forms</Link></li>
               <li><Link href="/checklist" className="hover:text-brand-700">My Checklist</Link></li>
               <li><Link href="/about" className="hover:text-brand-700">About</Link></li>
             </ul>

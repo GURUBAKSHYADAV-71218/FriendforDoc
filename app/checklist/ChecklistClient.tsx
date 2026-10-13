@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
-import { forms } from "@/lib/forms";
+import { forms, groupByCategory } from "@/lib/forms";
 import ChecklistWidget from "@/components/Checklist";
 
 export default function ChecklistClient() {
@@ -40,10 +40,14 @@ export default function ChecklistClient() {
           onChange={(e) => setSlug(e.target.value)}
           className="mt-2 w-full rounded-xl border border-line bg-white px-4 py-3 text-[14.5px] text-ink shadow-[var(--shadow-card)] outline-none focus:border-brand-500"
         >
-          {forms.map((f) => (
-            <option key={f.slug} value={f.slug}>
-              {f.title}
-            </option>
+          {groupByCategory(forms).map(([cat, group]) => (
+            <optgroup key={cat} label={cat}>
+              {group.map((f) => (
+                <option key={f.slug} value={f.slug}>
+                  {f.title}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
