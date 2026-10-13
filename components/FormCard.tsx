@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FormRecord } from "@/lib/types";
+import StatusBadge from "./StatusBadge";
 
 const categoryStyles: Record<string, string> = {
   "Entrance Exam": "bg-brand-50 text-brand-700",
@@ -31,6 +32,9 @@ export default function FormCard({ form }: { form: FormRecord }) {
         <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
           {form.description}
         </p>
+        <div className="mt-3">
+          <StatusBadge status={form.applicationStatus} />
+        </div>
       </div>
 
       <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
@@ -42,3 +46,4 @@ export default function FormCard({ form }: { form: FormRecord }) {
     </Link>
   );
 }
+

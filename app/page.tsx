@@ -7,6 +7,9 @@ import {
   Send,
   CheckCircle2,
   Circle,
+  Gauge,
+  Wrench,
+  Compass,
 } from "lucide-react";
 import FormCard from "@/components/FormCard";
 import HomeHeroSearch from "@/components/HomeHeroSearch";
@@ -16,6 +19,10 @@ const popularSlugs = ["neet", "jee-main", "cuet", "scholarship", "pan-card", "dr
 const popular = popularSlugs
   .map((slug) => forms.find((f) => f.slug === slug))
   .filter((f): f is NonNullable<typeof f> => !!f);
+
+// Rounded down to the nearest 10 so the headline number never overstates
+// the actual size of the dataset, and stays correct as entries are added.
+const catalogueCount = Math.floor(forms.length / 10) * 10;
 
 const steps = [
   {
@@ -44,6 +51,27 @@ const steps = [
   },
 ];
 
+const tools = [
+  {
+    href: "/ready",
+    icon: Gauge,
+    title: "Am I Ready?",
+    text: "Answer a few quick questions and get a readiness percentage with clear next steps.",
+  },
+  {
+    href: "/tools",
+    icon: Wrench,
+    title: "Document Tools",
+    text: "Check a photo or signature, then compress, resize, or convert it — all in your browser.",
+  },
+  {
+    href: "/find",
+    icon: Compass,
+    title: "Find My Forms",
+    text: "Tell us your education level and interests to see forms that may be relevant to you.",
+  },
+];
+
 export default function Home() {
   return (
     <div>
@@ -52,21 +80,23 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1 text-[12.5px] font-medium text-ink-soft">
-              For students filling out anything official
+              {catalogueCount}+ exams, counselling processes & scholarships
             </p>
             <h1 className="mt-5 font-display text-[38px] font-semibold leading-[1.1] tracking-tight text-ink text-balance sm:text-[46px] md:text-[52px]">
-              Your friend before every application.
+              Before you apply, know what you need.
             </h1>
             <p className="mt-5 max-w-lg text-[16.5px] leading-relaxed text-ink-soft">
-              Find eligibility, documents, deadlines and requirements before
-              you fill out a form.
+              Find application requirements, check your readiness, prepare
+              documents, and discover opportunities that may be relevant to you
+              — across engineering, medical, law, management, government jobs,
+              scholarships and more.
             </p>
 
             <div className="mt-8 max-w-lg">
               <HomeHeroSearch />
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/forms"
                 className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3 text-[14.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
@@ -74,10 +104,16 @@ export default function Home() {
                 Explore Forms <ArrowRight size={16} />
               </Link>
               <Link
-                href="/about"
-                className="text-[14.5px] font-semibold text-ink-soft hover:text-ink"
+                href="/ready"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-[14.5px] font-semibold text-ink-soft transition-colors hover:border-brand-300 hover:text-brand-700"
               >
-                How it works
+                Check My Readiness
+              </Link>
+              <Link
+                href="/tools"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-[14.5px] font-semibold text-ink-soft transition-colors hover:border-brand-300 hover:text-brand-700"
+              >
+                Check a Document
               </Link>
             </div>
           </div>
@@ -127,52 +163,77 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular applications */}
+      {/* Tools intro */}
       <section className="mx-auto max-w-6xl px-5 py-16">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="font-display text-[26px] font-semibold text-ink">
-            Popular Applications
-          </h2>
-          <Link
-            href="/forms"
-            className="hidden shrink-0 items-center gap-1 text-[14px] font-semibold text-brand-600 hover:text-brand-700 sm:flex"
-          >
-            View all <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {popular.map((form) => (
-            <FormCard key={form.slug} form={form} />
+        <h2 className="font-display text-[26px] font-semibold text-ink">
+          A full preparation toolkit, not just information
+        </h2>
+        <div className="mt-7 grid gap-5 sm:grid-cols-3">
+          {tools.map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="group rounded-2xl border border-line bg-white p-5 shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <tool.icon size={18} />
+              </span>
+              <h3 className="mt-4 font-display text-[16.5px] font-semibold text-ink">{tool.title}</h3>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{tool.text}</p>
+              <span className="mt-3 flex items-center gap-1 text-[13px] font-semibold text-brand-600 transition-transform group-hover:translate-x-0.5">
+                Try it <ArrowRight size={13} />
+              </span>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* How it works */}
+      {/* Popular applications */}
       <section className="border-t border-line bg-white">
         <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="font-display text-[26px] font-semibold text-ink">How it works</h2>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, i) => (
-              <div key={step.n} className="relative">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-[13px] font-bold text-white">
-                    {step.n}
-                  </span>
-                  <step.icon size={18} className="text-brand-600" />
-                </div>
-                <h3 className="mt-4 font-display text-[17px] font-semibold text-ink">
-                  {step.title}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">{step.text}</p>
-                {i < steps.length - 1 && (
-                  <div
-                    className="field-dashed absolute right-[-16px] top-5 hidden w-8 lg:block"
-                    aria-hidden="true"
-                  />
-                )}
-              </div>
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="font-display text-[26px] font-semibold text-ink">
+              Popular Applications
+            </h2>
+            <Link
+              href="/forms"
+              className="hidden shrink-0 items-center gap-1 text-[14px] font-semibold text-brand-600 hover:text-brand-700 sm:flex"
+            >
+              View all <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {popular.map((form) => (
+              <FormCard key={form.slug} form={form} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="mx-auto max-w-6xl px-5 py-16">
+        <h2 className="font-display text-[26px] font-semibold text-ink">How it works</h2>
+        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, i) => (
+            <div key={step.n} className="relative">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-[13px] font-bold text-white">
+                  {step.n}
+                </span>
+                <step.icon size={18} className="text-brand-600" />
+              </div>
+              <h3 className="mt-4 font-display text-[17px] font-semibold text-ink">
+                {step.title}
+              </h3>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">{step.text}</p>
+              {i < steps.length - 1 && (
+                <div
+                  className="field-dashed absolute right-[-16px] top-5 hidden w-8 lg:block"
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+          ))}
         </div>
       </section>
     </div>

@@ -10,10 +10,18 @@ import {
   TriangleAlert,
   ShieldCheck,
   ArrowLeft,
+  Gauge,
+  Users,
+  BookOpen,
+  Link2,
+  Search,
 } from "lucide-react";
-import { forms, getFormBySlug } from "@/lib/forms";
+import { forms, getFormBySlug, opportunityTypeLabels } from "@/lib/forms";
 import RequirementSection from "@/components/RequirementSection";
 import ExplainButton from "@/components/ExplainButton";
+import StatusBadge from "@/components/StatusBadge";
+import ReadinessQuiz from "@/components/ReadinessQuiz";
+import { formatIsoDate } from "@/lib/dateFormat";
 
 export function generateStaticParams() {
   return forms.map((f) => ({ slug: f.slug }));
@@ -31,6 +39,25 @@ const categoryStyles: Record<string, string> = {
   Government: "bg-stamp-amber-100 text-stamp-amber",
   Scholarship: "bg-clip-teal-100 text-clip-teal",
   Education: "bg-flag-rose-100 text-flag-rose",
+  Engineering: "bg-brand-50 text-brand-700",
+  "Medical & Health Sciences": "bg-flag-rose-100 text-flag-rose",
+  Law: "bg-stamp-amber-100 text-stamp-amber",
+  Management: "bg-clip-teal-100 text-clip-teal",
+  "Design & Architecture": "bg-brand-50 text-brand-700",
+  Defence: "bg-stamp-amber-100 text-stamp-amber",
+  "Civil Services": "bg-brand-50 text-brand-700",
+  "Banking & Finance": "bg-clip-teal-100 text-clip-teal",
+  Railways: "bg-stamp-amber-100 text-stamp-amber",
+  "Teaching & Academic": "bg-flag-rose-100 text-flag-rose",
+  "Study Abroad": "bg-clip-teal-100 text-clip-teal",
+  "Other Careers": "bg-brand-50 text-brand-700",
+  Counselling: "bg-flag-rose-100 text-flag-rose",
+};
+
+const verificationCopy: Record<string, string> = {
+  verified: "Checked against a reliable current source at the time of writing.",
+  informational: "Stable, well-established public information that doesn't depend on a current date.",
+  needs_confirmation: "Genuinely real and worth knowing about — confirm current-cycle specifics on the official site.",
 };
 
 export default async function FormDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -53,38 +80,72 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
         <ArrowLeft size={14} /> Back to all forms
       </Link>
 
-      {/* Header */}
+      {/* Header / overview */}
       <div className="mt-5 rounded-2xl border border-line bg-white p-6 shadow-[var(--shadow-card)] sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span
-              className={`inline-block rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${
-                categoryStyles[form.category] ?? "bg-brand-50 text-brand-700"
-              }`}
-            >
-              {form.category}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-block rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${
+                  categoryStyles[form.category] ?? "bg-brand-50 text-brand-700"
+                }`}
+              >
+                {form.category}
+              </span>
+              <span className="inline-block rounded-full bg-paper px-2.5 py-1 text-[11.5px] font-semibold text-ink-faint">
+                {opportunityTypeLabels[form.opportunityType] ?? form.opportunityType}
+              </span>
+              <StatusBadge status={form.applicationStatus} />
+            </div>
             <h1 className="mt-3 font-display text-[30px] font-semibold leading-tight text-ink sm:text-[34px]">
               {form.title}
             </h1>
             <p className="mt-1.5 text-[14px] text-ink-faint">{form.authority}</p>
           </div>
-          <a
-            href={form.officialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-600 px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-          >
-            Official website <ExternalLink size={14} />
-          </a>
+          {form.officialUrl ? (
+            <a
+              href={form.officialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-600 px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
+            >
+              Official website <ExternalLink size={14} />
+            </a>
+          ) : (
+            <a
+              href={`https://www.google.com/search?q=${encodeURIComponent(form.title + " official website")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-[13.5px] font-semibold text-ink-soft shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
+            >
+              Search official site <Search size={14} />
+            </a>
+          )}
         </div>
         <p className="mt-5 max-w-3xl text-[15px] leading-relaxed text-ink-soft">
           {form.longDescription}
         </p>
-        <div className="mt-5 flex items-center gap-2 rounded-lg bg-paper px-3.5 py-2.5 text-[12.5px] text-ink-faint">
-          <ShieldCheck size={15} className="shrink-0 text-clip-teal" />
-          {form.lastVerified}. Always verify the latest requirements on the official website.
+        {form.whoIsItFor && (
+          <div className="mt-4 flex items-start gap-2.5 text-[14px] text-ink-soft">
+            <Users size={16} className="mt-0.5 shrink-0 text-brand-600" />
+            <span>
+              <strong className="text-ink">Who is it for?</strong> {form.whoIsItFor}
+            </span>
+          </div>
+        )}
+        <div className="mt-5 flex flex-col gap-2 rounded-lg bg-paper px-3.5 py-2.5 text-[12.5px] text-ink-faint sm:flex-row sm:items-center sm:justify-between">
+          <span className="flex items-center gap-2">
+            <ShieldCheck size={15} className="shrink-0 text-clip-teal" />
+            {form.lastVerified}
+          </span>
+          <span className="italic">{verificationCopy[form.verificationStatus]}</span>
         </div>
+        {!form.officialUrl && (
+          <p className="mt-2 text-[12px] text-stamp-amber">
+            We don&apos;t have a confidently-verified official link for this entry yet — please search
+            for it directly rather than trusting an unofficial result.
+          </p>
+        )}
       </div>
 
       {/* Sections */}
@@ -99,6 +160,89 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
             ))}
           </ul>
         </RequirementSection>
+
+        {(form.examPattern?.length || form.subjects?.length) ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {!!form.examPattern?.length && (
+              <RequirementSection icon={BookOpen} title="Exam Pattern" id="pattern">
+                <ul className="space-y-2.5">
+                  {form.examPattern.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-soft">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </RequirementSection>
+            )}
+            {!!form.subjects?.length && (
+              <RequirementSection icon={BookOpen} title="Subjects" id="subjects">
+                <ul className="flex flex-wrap gap-2">
+                  {form.subjects.map((s, i) => (
+                    <li key={i} className="rounded-full bg-paper px-3 py-1 text-[13px] text-ink-soft">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </RequirementSection>
+            )}
+          </div>
+        ) : null}
+
+        {form.opportunityType === "counselling" && (form.associatedExams?.length || form.registrationSeparateFromExam !== undefined) && (
+          <RequirementSection icon={Link2} title="Counselling Information" id="counselling-info">
+            {!!form.associatedExams?.length && (
+              <p className="text-[14px] leading-relaxed text-ink-soft">
+                <strong className="text-ink">Associated exam(s):</strong> {form.associatedExams.join(", ")}
+              </p>
+            )}
+            {form.registrationSeparateFromExam !== undefined && (
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+                <strong className="text-ink">Registration:</strong>{" "}
+                {form.registrationSeparateFromExam
+                  ? "Registering for counselling is a separate step from registering for the exam — qualifying doesn't automatically enrol you."
+                  : "Registration is bundled with the exam application."}
+              </p>
+            )}
+          </RequirementSection>
+        )}
+
+        {/* Important requirements */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <RequirementSection icon={ImageIcon} title="Photograph Requirements" id="photo">
+            <ul className="space-y-2.5">
+              {form.photoRequirements.map((item, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-soft">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/tools"
+              className="mt-4 inline-block text-[12.5px] font-semibold text-brand-600 hover:text-brand-700"
+            >
+              Check or resize your photo →
+            </Link>
+          </RequirementSection>
+
+          <RequirementSection icon={PenLine} title="Signature Requirements" id="signature">
+            <ul className="space-y-2.5">
+              {form.signatureRequirements.map((item, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-soft">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/tools"
+              className="mt-4 inline-block text-[12.5px] font-semibold text-brand-600 hover:text-brand-700"
+            >
+              Check or resize your signature →
+            </Link>
+          </RequirementSection>
+        </div>
 
         <RequirementSection icon={ListChecks} title="Documents Required" id="documents">
           <ul className="divide-y divide-line">
@@ -121,30 +265,7 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
           </ul>
         </RequirementSection>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <RequirementSection icon={ImageIcon} title="Photograph Requirements" id="photo">
-            <ul className="space-y-2.5">
-              {form.photoRequirements.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-soft">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </RequirementSection>
-
-          <RequirementSection icon={PenLine} title="Signature Requirements" id="signature">
-            <ul className="space-y-2.5">
-              {form.signatureRequirements.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-soft">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </RequirementSection>
-        </div>
-
+        {/* Application information */}
         <RequirementSection icon={CalendarClock} title="Important Dates" id="dates">
           <div className="grid gap-3 sm:grid-cols-2">
             {form.importantDates.map((d, i) => (
@@ -157,13 +278,17 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <p
                   className={`mt-1 text-[14.5px] font-medium ${
-                    d.known ? "text-ink" : "text-stamp-amber"
+                    d.verified && d.date ? "text-ink" : "text-stamp-amber"
                   }`}
                 >
-                  {d.value}
+                  {d.verified && d.date ? formatIsoDate(d.date) : d.note ?? "Check the latest official notification."}
                 </p>
               </div>
             ))}
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-[12.5px] text-ink-faint">
+            <StatusBadge status={form.applicationStatus} size="md" />
+            {form.statusDetail}
           </div>
         </RequirementSection>
 
@@ -184,6 +309,19 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
           </RequirementSection>
         </div>
 
+        {/* Readiness check */}
+        <section id="readiness" className="scroll-mt-24">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+              <Gauge size={16} strokeWidth={2.25} />
+            </span>
+            <h2 className="font-display text-[19px] font-semibold text-ink">
+              Check your readiness
+            </h2>
+          </div>
+          <ReadinessQuiz form={form} />
+        </section>
+
         {/* Official source */}
         <div className="rounded-2xl border border-line bg-white p-6 text-center shadow-[var(--shadow-card)] sm:p-8">
           <h2 className="font-display text-[19px] font-semibold text-ink">Ready to apply?</h2>
@@ -191,19 +329,30 @@ export default async function FormDetailPage({ params }: { params: Promise<{ slu
             FriendForDoc only prepares you — the actual application happens on
             the official site.
           </p>
-          <a
-            href={form.officialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-[14.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-          >
-            Visit Official Website <ExternalLink size={15} />
-          </a>
+          {form.officialUrl ? (
+            <a
+              href={form.officialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-[14.5px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
+            >
+              Visit Official Website <ExternalLink size={15} />
+            </a>
+          ) : (
+            <a
+              href={`https://www.google.com/search?q=${encodeURIComponent(form.title + " official website")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-[14.5px] font-semibold text-ink-soft shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
+            >
+              Search for the official website <Search size={15} />
+            </a>
+          )}
           <p className="mt-3 text-[12px] text-ink-faint">
             Always verify the latest requirements on the official website.
           </p>
           <Link
-            href="/checklist"
+            href={`/checklist?form=${form.slug}`}
             className="mt-4 block text-[13px] font-medium text-brand-600 hover:text-brand-700"
           >
             Build your document checklist for {form.title} →
